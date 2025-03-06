@@ -1,13 +1,38 @@
 import { useState } from "react";
 import { MdClose } from "react-icons/md";
+import axiosInstance from "../utils/api.js";
 
-const EditNote = ({ noteData, type, onClose }) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+const EditNote = ({ noteData, type, onClose, getAllNotes }) => {
+  const [title, setTitle] = useState(noteData?.title || "");
+  const [content, setContent] = useState(noteData?.content || "");
   const [error, setError] = useState(null);
 
-  const addNewNote = async () => {};
-  const editNode = async () => {};
+  const addNewNote = async () => {
+    try {
+      const response = await axiosInstance.post("/note", { title, content });
+      if (response?.data?.note) {
+        getAllNotes();
+        onClose();
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        setError(error.response.data.message);
+      }
+    }
+  };
+  const editNode = async () => {
+    try {
+      const response = await axiosInstance.put(`/note/${noteData._id}`);
+      if (response?.data?.note) {
+        getAllNotes();
+        onClose();
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        setError(error.response.data.message);
+      }
+    }
+  };
 
   const handleAddNote = () => {
     if (!title) {
@@ -62,7 +87,7 @@ const EditNote = ({ noteData, type, onClose }) => {
         className="btn-primary font-medium mt-5 p-3"
         onClick={handleAddNote}
       >
-        ADD
+        {type === "Edit" ? "UPDATE" : "ADD"}
       </button>
     </div>
   );
