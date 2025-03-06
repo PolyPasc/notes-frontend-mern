@@ -3,11 +3,13 @@ import React from "react";
 const ProfileInfo = ({ userInfo, onLogout }) => {
   return (
     <div>
-      <div className="">
+      <div className="flex items-center gap-3">
         <p className="text-sm font-medium">{userInfo?.fullName}</p>
-        <button className="" onClick={onLogout}>
-          Logout
-        </button>
+        {localStorage.getItem("token") && (
+          <button className="" onClick={onLogout}>
+            Logout
+          </button>
+        )}
       </div>
     </div>
   );
