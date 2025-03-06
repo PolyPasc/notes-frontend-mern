@@ -72,7 +72,7 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mx-4">
             {allNotes.map((note) => (
               <NoteCard
-                id={note._id}
+                key={note._id}
                 content={note.content}
                 title={note.title}
                 date={note.createdAt}
@@ -100,7 +100,6 @@ const Home = () => {
 
       <Modal
         isOpen={openModal.isShown}
-        onRequestClose={() => {}}
         style={{
           overlay: {
             backgroundColour: "rgba(0,0,0,0.2)",
@@ -108,7 +107,7 @@ const Home = () => {
         }}
         contentLabel=""
         ariaHideApp={false}
-        className="w-[40%] max-h-[75%] bg-slate-100 shadow-2xl rounded-md mx-auto mt-40 p-5"
+        className="max-w-[90%] md:max-w-[60%] max-h-[75%] bg-slate-100 shadow-2xl rounded-md mx-auto mt-40 p-5"
       >
         <EditNote
           type={openModal.type}
