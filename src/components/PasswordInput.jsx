@@ -14,6 +14,8 @@ const PasswordInput = ({ value, onChange, placeholder }) => {
         value={value}
         onChange={onChange}
         placeholder={placeholder || "password "}
+        minLength={5}
+        required
         className="w-full text-sm bg-transparent py-3 mr-3 rounded outline-none"
       />
       {showPassword ? (
