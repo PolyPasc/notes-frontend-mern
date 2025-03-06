@@ -41,9 +41,8 @@ const SignUp = () => {
         setError(response.data.message);
         return;
       }
-      if (response.data && response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
+      if (response.data && response.data.accessToken) {
+        navigate("/login");
       }
     } catch (error) {
       if (error?.response?.data?.message) {
@@ -59,31 +58,35 @@ const SignUp = () => {
       <Navbar />
       <div className="flex items-center justify-center mt-28">
         <div className="w-96 border rounded bg-white px-7 py-10">
-          <form onSubmit={handleSignup}></form>
-          <h4 className="text-2xl mb-7">SignUp</h4>
-          <input
-            type="text"
-            placeholder="Name"
-            className="input-box"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Email"
-            className="input-box"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <form onSubmit={handleSignup}>
+            <h4 className="text-2xl mb-7">SignUp</h4>
+            <input
+              type="text"
+              placeholder="Name"
+              className="input-box"
+              value={name}
+              required
+              minLength={2}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Email"
+              className="input-box"
+              value={email}
+              required
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          <PasswordInput
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error && <p className="text-red-600 text-xs pb-1">{error}</p>}
-          <button type="submit" className="btn-primary">
-            Create Account
-          </button>
+            <PasswordInput
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {error && <p className="text-red-600 text-xs pb-1">{error}</p>}
+            <button type="submit" className="btn-primary">
+              Create Account
+            </button>
+          </form>
           <p className="text-sm mt-4">
             Already have an Account?{" "}
             <Link to="/login" className="font-medium text-primary underline">
