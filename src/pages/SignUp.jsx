@@ -3,12 +3,15 @@ import Navbar from "../components/Navbar";
 import PasswordInput from "../components/PasswordInput.jsx";
 import { Link } from "react-router-dom";
 import { validateEmail } from "../utils/Helper";
+import axiosInstance from "../utils/api.js";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -18,15 +21,37 @@ const SignUp = () => {
       return;
     }
 
-      if (!validateEmail(email)) {
-          setError("Please enter a valid email address");
-          return;
-        }
-        if (!password) {
-          setError("Please enter the password");
-          return;
-        }
-        setError("");
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+    if (!password) {
+      setError("Please enter the password");
+      return;
+    }
+    setError("");
+
+    try {
+      const response = await axiosInstance.post("/auth/signup", {
+        fullName: name,
+        email,
+        password,
+      });
+      if (response.data && response.data.error) {
+        setError(response.data.message);
+        return;
+      }
+      if (response.data && response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        setError(error?.response?.data?.message);
+      } else {
+        setError("An unexpected Error Occurred.");
+      }
+    }
   };
 
   return (
