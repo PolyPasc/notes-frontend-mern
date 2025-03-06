@@ -55,6 +55,8 @@ const Login = () => {
               placeholder="Email"
               className="input-box"
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
             />
             <PasswordInput
               value={password}
