@@ -22,7 +22,10 @@ const EditNote = ({ noteData, type, onClose, getAllNotes }) => {
   };
   const editNode = async () => {
     try {
-      const response = await axiosInstance.put(`/note/${noteData._id}`);
+      const response = await axiosInstance.put(`/note/${noteData._id}`, {
+        title,
+        content,
+      });
       if (response?.data?.note) {
         getAllNotes();
         onClose();
@@ -54,12 +57,6 @@ const EditNote = ({ noteData, type, onClose, getAllNotes }) => {
 
   return (
     <div className="relative">
-      <button
-        className="size-5 rounded-full flex items-center justify-center absolute -top-3 -right-3 hover:bg-slate-600"
-        onClick={onClose}
-      >
-        <MdClose className="text-xl text-slate-400" />
-      </button>
       <div className="flex flex-col gap-2">
         <label className="input-label">Title</label>
         <input
@@ -68,6 +65,7 @@ const EditNote = ({ noteData, type, onClose, getAllNotes }) => {
           placeholder="Enter Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          required
         />
       </div>
       <div className="flex flex-col gap-2 mt-4">
@@ -78,6 +76,7 @@ const EditNote = ({ noteData, type, onClose, getAllNotes }) => {
           placeholder="Enter Content"
           content={10}
           value={content}
+          required
           onChange={(e) => setContent(e.target.value)}
         />
       </div>
@@ -87,7 +86,13 @@ const EditNote = ({ noteData, type, onClose, getAllNotes }) => {
         className="btn-primary font-medium mt-5 p-3"
         onClick={handleAddNote}
       >
-        {type === "Edit" ? "UPDATE" : "ADD"}
+        {type === "edit" ? "UPDATE" : "ADD"}
+      </button>
+      <button
+        className="size-5 rounded-full flex items-center justify-center absolute -top-3 -right-3 hover:bg-slate-600"
+        onClick={onClose}
+      >
+        <MdClose className="text-xl text-slate-400" />
       </button>
     </div>
   );
