@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Modal from "react-modal";
 import NoteCard from "../components/NoteCard.jsx";
 import { MdAdd } from "react-icons/md";
 import EditNote from "./EditNote.jsx";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/api.js";
 
 const Home = () => {
   const [openModal, setOpenModaal] = useState({
@@ -12,19 +14,80 @@ const Home = () => {
     data: null,
   });
 
+  const [allNotes, setAllNotes] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
+  const navigate = useNavigate();
+
+  const handleEdit = (noteDetails) => {
+    setOpenModaal({ isShown: true, data: noteDetails, type: "edit" });
+  };
+
+  const getUserInfo = async () => {
+    try {
+      const response = await axiosInstance.get("/auth/check/user");
+      if (response?.data?.user) {
+        setUserInfo(response?.data?.user);
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+      }
+    }
+  };
+
+  const getAllNotes = async () => {
+    try {
+      const response = await axiosInstance.get("/note");
+      if (response?.data?.notes) {
+        setAllNotes(response.data.notes);
+      }
+    } catch (error) {
+      console.log("Error occured, can't fetch all notes", error);
+    }
+  };
+
+  const deleteNote = async (noteDetails) => {
+    try {
+      const response = await axiosInstance.delete(`/note/${noteDetails._id}`);
+      if (!response?.data?.error) {
+        getAllNotes();
+      }
+    } catch (error) {
+      console.log("Error occured, wasn't able to delete this note", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserInfo();
+    getAllNotes();
+    return () => {};
+  }, []);
+
   return (
     <>
-      <Navbar />
+      <Navbar userInfo={userInfo} />
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mx-4">
-          <NoteCard
-            content={""}
-            title={""}
-            date={""}
-            onDelete={() => {}}
-            onEdit={() => {}}
-          />
-        </div>
+        {allNotes.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mx-4">
+            {allNotes.map((note) => (
+              <NoteCard
+                id={note._id}
+                content={note.content}
+                title={note.title}
+                date={note.createdAt}
+                onDelete={() => deleteNote(note)}
+                onEdit={() => handleEdit(note)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center mt-20">
+            <p className="w-1/2 text-sm font-medium text-slate-700 text-center leading-7 mt-5">
+              Create a note by using the "Add" Button, no note present
+            </p>
+          </div>
+        )}
       </div>
       <button
         className="size-16 flex justify-center items-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10"
@@ -50,6 +113,7 @@ const Home = () => {
         <EditNote
           type={openModal.type}
           noteData={openModal.data}
+          getAllNotes={getAllNotes}
           onClose={() => {
             setOpenModaal({ isShown: false, type: "add", data: null });
           }}
