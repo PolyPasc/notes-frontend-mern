@@ -6,7 +6,14 @@ const NoteCard = ({ title, date, content, onEdit, onDelete }) => {
     <div className="border rounded p-4 bg-white hover:shadow-xl transition-all ease-in-out">
       <div className="flex items-center justify-between">
         <h6 className="text-sm font-medium">{title}</h6>
-        <span className="text-xs text-slate-500">{date}</span>
+        <div className="grid">
+          <span className="text-xs text-slate-500">
+            {new Date(date).toDateString()}
+          </span>
+          <span className="text-xs text-slate-500">
+            {new Date(date).toLocaleTimeString()}
+          </span>
+        </div>
       </div>
       <p className="text-xs text-slate-600 mt-2">{content}</p>
       <div className="flex items-center justify-end mt-2 gap-2">
